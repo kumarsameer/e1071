@@ -10,6 +10,7 @@
 #include <stdarg.h>
 #include <limits.h>
 #include <locale.h>
+#include <omp.h>
 #include "svm.h"
 int libsvm_version = LIBSVM_VERSION;
 typedef float Qfloat;
@@ -1288,6 +1289,9 @@ public:
 		int start, j;
 		if((start = cache->get_data(i,&data,len)) < len)
 		{
+			omp_set_dynamic(0);			
+			omp_set_num_threads(4);
+			#pragma omp parallel for private(j)
 			for(j=start;j<len;j++)
 				data[j] = (Qfloat)(y[i]*y[j]*(this->*kernel_function)(i,j));
 		}
@@ -2517,6 +2521,9 @@ double svm_predict_values(const svm_model *model, const svm_node *x, double* dec
 	{
 		double *sv_coef = model->sv_coef[0];
 		double sum = 0;
+		omp_set_dynamic(0);
+		omp_set_num_threads(4);
+		#pragma omp parallel for private(i) reduction(+:sum)
 		for(i=0;i<model->l;i++)
 			sum += sv_coef[i] * Kernel::k_function(x,model->SV[i],model->param);
 		sum -= model->rho[0];
@@ -2533,6 +2540,9 @@ double svm_predict_values(const svm_model *model, const svm_node *x, double* dec
 		int l = model->l;
 		
 		double *kvalue = Malloc(double,l);
+		omp_set_dynamic(0);
+		omp_set_num_threads(4);
+		# pragma omp parallel for private(i)
 		for(i=0;i<l;i++)
 			kvalue[i] = Kernel::k_function(x,model->SV[i],model->param);
 
