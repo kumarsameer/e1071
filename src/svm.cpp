@@ -1290,7 +1290,7 @@ public:
 		if((start = cache->get_data(i,&data,len)) < len)
 		{
 			omp_set_dynamic(0);			
-			omp_set_num_threads(4);
+			omp_set_num_threads(14);
 			#pragma omp parallel for private(j)
 			for(j=start;j<len;j++)
 				data[j] = (Qfloat)(y[i]*y[j]*(this->*kernel_function)(i,j));
