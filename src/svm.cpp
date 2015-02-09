@@ -2522,7 +2522,7 @@ double svm_predict_values(const svm_model *model, const svm_node *x, double* dec
 		double *sv_coef = model->sv_coef[0];
 		double sum = 0;
 		omp_set_dynamic(0);
-		omp_set_num_threads(24);
+		omp_set_num_threads(32);
 		#pragma omp parallel for private(i) reduction(+:sum)
 		for(i=0;i<model->l;i++)
 			sum += sv_coef[i] * Kernel::k_function(x,model->SV[i],model->param);
