@@ -1407,6 +1407,9 @@ public:
 		int j, real_i = index[i];
 		if(cache->get_data(real_i,&data,l) < l)
 		{
+			omp_set_dynamic(0);			
+			omp_set_num_threads(60);
+			#pragma omp parallel for private(j)
 			for(j=0;j<l;j++)
 				data[j] = (Qfloat)(this->*kernel_function)(real_i,j);
 		}
